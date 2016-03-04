@@ -1,0 +1,54 @@
+<?php
+    /**
+     * Created by PhpStorm.
+     * User: Dennis and Mark
+     * Date: 12/21/2015
+     * Time: 2:15 PM
+     */
+function wordsalad_install() {
+    db_update('system')
+      ->fields(array('weight' => 15))
+      ->condition('name', 'wordsalad', '=')
+      ->execute();
+}
+function wordsalad_schema(){
+   $schema = array();
+    $schema['wordsalad_score'] = array(
+      'description' => 'This table contains WordSalad data specific to Writing 365 journal entries',
+      'fields' => array(
+        'nid' => array (
+          'description' => 'The node id of the journal entry',
+          'type' => 'int',
+          'length' => 'normal',
+          'not null' => TRUE,
+          'default' => 0,
+        ),
+        'is_wordsalad' => array(
+          'description' => 'If the node is not adequate writing, then is_wordsalad = 1 = yes. Otherwise, 0 = no',
+          'type' => 'int',
+          'length' => 'normal',
+          'default' => 0,
+        ),
+        'percent' => array(
+          'description' => 'Unique language words to total language words, expressed as a percentage',
+          'type' => 'float',
+          'length' => 'big',
+          'not null' => TRUE,
+          'default' => 0,
+        ),
+        'score' => array(
+          'description' => 'The matrix calculation score (the WordSalad score)',
+          'type' => 'float',
+          'length' => 'big',
+          'not null' => TRUE,
+          'default' => 0,
+        ),
+      ),
+      'primary key' => array('nid'),
+    );
+    return $schema;
+}
+
+function wordsalad_uninstall() {
+  db_drop_table('wordsalad_score');
+}
