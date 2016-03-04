@@ -1,0 +1,163 @@
+<?php
+
+/**
+ *
+ */
+function wordsalad_entity_postinsert($entity, $entity_type)
+{
+if($entity_type == 'node') {
+    if ($entity->type == 'writing365') {
+        // End point
+        $endpoint = 'http://tac-dev.nws.oregonstate.edu/WordSalad/ServiceController/devDetection/' . $entity->nid;
+
+        // Initializing Curl
+        $curl = curl_init();
+
+        // Setting Curl options
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Accept: application/json'));
+
+        // Will return the response , if false it print the response
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+        // Set the url
+        curl_setopt($curl, CURLOPT_URL, $endpoint);
+
+        // Executing the request to WordSalad
+        $result = curl_exec($curl);
+
+        // Closing the cURL request
+        curl_close($curl);
+
+        // TODO Remove. Watchdog display body value return from select statement
+        /*watchdog('writing365', '%result, %type', array(
+            '%result' => $result,
+            '%type' => $entity_type
+        ), WATCHDOG_DEBUG);*/
+
+        // Decoding JSON results from WordSalad
+        $element = json_decode($result);
+
+        if (array_key_exists('error', $element)) {
+            $nodeId = $entity->nid;
+            $error = $element->error;
+            $message = $element->message;
+
+            // TODO Remove. Watchdog display body value return from select statement
+            /*watchdog('writing365', 'wordsalad_entity_postinsert: WordSalad Error. NodeId:%nodeId, Error:%error, Error Message:%message', array(
+                '%nodeId' => $nodeId,
+                '%error' => $error,
+                '%message' => $message
+            ), WATCHDOG_DEBUG);*/
+
+        } else {
+            $nodeId = $entity->nid;
+            $isWordsalad = $element->is_wordsalad;
+            $percent = $element->percent;
+            $score = $element->score;
+
+            // TODO Remove. Watchdog display body value return from select statement
+            /*watchdog('writing365', 'wordsalad_entity_postinsert: Return value. Is Gibberish:%isgibberish, Percentage:%percent, Score:%score, Text:%bodytext', array(
+                '%bodytext' => $element->node_body_text,
+                '%isgibberish' => $element->is_wordsalad,
+                '%percent' => $element->percent,
+                '%score' => $element->score
+            ), WATCHDOG_DEBUG);*/
+
+            drupal_set_message(t('Your wordsalad score for this post is: ', array('@score' => $score, '@percent' => $percent)), 'error');
+
+            if (isset($isWordsalad)) {
+                db_insert('wordsalad_score')->fields(array(
+                    'nid' => $nodeId,
+                    'is_wordsalad' => $isWordsalad,
+                    'percent' => $percent,
+                    'score' => $score,
+                ))->execute();
+
+            }
+        }
+    }
+}
+}
+
+/**
+ *
+ */
+function wordsalad_entity_postupdate($entity, $entity_type)
+{
+    if($entity_type == 'node') {
+        if ($entity->type == 'writing365') {
+            // End point
+            $endpoint = 'http://tac-dev.nws.oregonstate.edu/WordSalad/ServiceController/devDetection/' . $entity->nid;
+
+            // Initializing Curl
+            $curl = curl_init();
+
+            // Setting Curl options
+            curl_setopt($curl, CURLOPT_HTTPHEADER, array('Accept: application/json'));
+
+            // Will return the response , if false it print the response
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+            // Set the url
+            curl_setopt($curl, CURLOPT_URL, $endpoint);
+
+            // Executing the request to WordSalad
+            $result = curl_exec($curl);
+
+            // Closing the cURL request
+            curl_close($curl);
+
+            // TODO Remove. Watchdog display body value return from select statement
+            /*watchdog('writing365', '%result, %type, %op', array(
+                '%result' => $result,
+                '%type' => $entity_type
+            ), WATCHDOG_DEBUG);*/
+
+            // Decoding JSON results from WordSalad
+            $element = json_decode($result);
+
+            if (array_key_exists('error', $element)) {
+                $nodeId = $entity->nid;
+                $error = $element->error;
+                $message = $element->message;
+
+                // TODO Remove. Watchdog display body value return from select statement
+                /*watchdog('writing365', 'wordsalad_entity_postupdate: WordSalad Error. NodeId:%nodeId, Error:%error, Error Message:%message', array(
+                    '%nodeId' => $nodeId,
+                    '%error' => $error,
+                    '%message' => $message
+                ), WATCHDOG_DEBUG);*/
+
+            } else {
+                $nodeId = $entity->nid;
+                $isWordsalad = $element->is_wordsalad;
+                $percent = $element->percent;
+                $score = $element->score;
+
+                // TODO Remove. Watchdog display body value return from select statement
+                /*watchdog('writing365', 'wordsalad_entity_postupdate: Return value. Is Gibberish:%isgibberish, Percentage:%percent, Score:%score, Text:%bodytext', array(
+                    '%bodytext' => $element->node_body_text,
+                    '%isgibberish' => $element->is_wordsalad,
+                    '%percent' => $element->percent,
+                    '%score' => $element->score
+                ), WATCHDOG_DEBUG);*/
+
+                drupal_set_message(t('Your wordsalad score for this post is: ', array('@score' => $score, '@percent' => $percent)), 'error');
+
+                if (isset($isWordsalad)) {
+                    db_update('wordsalad_score')
+                        ->fields(array(
+                            'nid' => $nodeId,
+                            'is_wordsalad' => $isWordsalad,
+                            'percent' => $percent,
+                            'score' => $score,
+                        ))
+                        ->condition('nid', $entity->nid)
+                        ->execute();
+                }
+            }
+        }
+    }
+}
+
+?>
