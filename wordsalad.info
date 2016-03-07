@@ -4,6 +4,8 @@ package = Writing Center Tools
 version = 7.x-1.2-dev
 core = 7.x
 
+stylesheets[all][] = /css/font-awesome.min.css
+
 dependencies[] = writing365
 dependencies[] = hook_post_action
 
