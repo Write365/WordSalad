@@ -11,5 +11,6 @@ dependencies[] = hook_post_action
 
 files[] = wordsalad.install
 files[] = wordsalad.module
+files[] = wordsalad.pages.inc
 
 project = "Write 365"
