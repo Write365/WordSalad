@@ -139,14 +139,14 @@ function wordsalad_entity_postupdate($entity, $entity_type) {
  */
 function wordsalad_menu() {
   $items['wordsaladinfo'] = array(
-    'title' => 'WordSalad Summary (WSmodule)',
+    'title' => 'WordSalad Summary Admin',
     'page callback' => 'wordsalad_page_info_last',
     'access arguments' => array('administer write365'),
     'type' => MENU_SUGGESTED_ITEM,
     'file' => 'wordsalad.pages.inc'
   );
   $items['wordsaladinfo/%user_uid_optional'] = array(
-    'title' => 'My Journal Summary (WSmodule)',
+    'title' => 'WordSalad Summary',
     'page callback' => 'wordsalad_page_info',
     'page arguments' => array(1),
     'access callback' => 'writing365_page_user_access',
