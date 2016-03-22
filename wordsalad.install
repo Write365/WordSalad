@@ -5,12 +5,27 @@
      * Date: 12/21/2015
      * Time: 2:15 PM
      */
+
+/**
+ * Implements hook_install().
+ */
 function wordsalad_install() {
     db_update('system')
       ->fields(array('weight' => 15))
       ->condition('name', 'wordsalad', '=')
       ->execute();
 }
+
+/**
+ * Implements hook_uninstall().
+ */
+function wordsalad_uninstall() {
+    db_drop_table('wordsalad_score');
+}
+
+/**
+ * Implements hook_schema
+ */
 function wordsalad_schema(){
    $schema = array();
     $schema['wordsalad_score'] = array(
@@ -49,6 +64,8 @@ function wordsalad_schema(){
     return $schema;
 }
 
-function wordsalad_uninstall() {
-  db_drop_table('wordsalad_score');
+function wordsalad_update_0012(){
+    return t('WordSalad is now updated to version 1.2');
+
 }
+
