@@ -8,12 +8,14 @@ function wordsalad_entity_postinsert($entity, $entity_type) {
     if ($entity->type == 'writing365') {
       // End point
 
+      $url = variable_get('wordsalad_api_url');
+
       /*
        * !! IMPORTANT !!
        * Contact NathanHealea for Endpoint of connection
        * March 4th, 2016 a public url has not been created.
        */
-      $endpoint = NULL;
+      $endpoint = $url + $entity->nid;
 
       // Initializing Curl
       $curl = curl_init();
@@ -74,12 +76,14 @@ function wordsalad_entity_postupdate($entity, $entity_type) {
   if ($entity_type == 'node') {
     if ($entity->type == 'writing365') {
 
+      $url = variable_get('wordsalad_api_url');
+
       /*
        * !! IMPORTANT !!
        * Contact NathanHealea for Endpoint of connection
        * March 4th, 2016 a public url has not been created.
        */
-      $endpoint = NULL;
+      $endpoint = $url + $entity->nid;
 
       // Initializing Curl
       $curl = curl_init();
@@ -138,20 +142,27 @@ function wordsalad_entity_postupdate($entity, $entity_type) {
  * Added 3-2-16
  */
 function wordsalad_menu() {
-  $items['wordsaladinfo'] = array(
+  $items['wordsalad'] = array(
     'title' => 'WordSalad Summary Admin',
     'page callback' => 'wordsalad_page_info_last',
     'access arguments' => array('administer write365'),
     'type' => MENU_SUGGESTED_ITEM,
     'file' => 'wordsalad.pages.inc'
   );
-  $items['wordsaladinfo/%user_uid_optional'] = array(
+  $items['wordsalad/%user_uid_optional'] = array(
     'title' => 'WordSalad Summary',
     'page callback' => 'wordsalad_page_info',
     'page arguments' => array(1),
     'access callback' => 'writing365_page_user_access',
     'access arguments' => array(1),
     'file' => 'wordsalad.pages.inc'
+  );
+  $items['admin/config/services/wordsalad'] = array(
+      'title' => 'WordSalad API URL',
+      'description' => 'Configure WordSalad settings.',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('wordsalad_admin_form'),
+      'access arguments' => array('administer settings'),
   );
   return $items;
 }
@@ -202,8 +213,32 @@ function wordsalad_block_configure($delta = '') {
         30
       )),
     );
-    return $form;
   }
+  return $form;
 }
+
+function wordsalad_admin_form(){
+  $from = array();
+
+  $form['wordsalad_api_url'] = array(
+      '#type' => 'textfield',
+      '#title' => 'WordSalad API URL ',
+      '#description' => 'Endpoint for WordSalad API URL',
+      '#required' => TRUE,
+  );
+  
+  $form['modules'] = array();
+  
+  $form['actions'] = array('#type' => 'actions');
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+      '#value' => t('Save configuration'),
+  );
+
+
+  return system_settings_form($form);
+}
+
+
 
 ?>
