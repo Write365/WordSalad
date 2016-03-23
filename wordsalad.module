@@ -145,7 +145,7 @@ function wordsalad_menu() {
   $items['wordsalad'] = array(
     'title' => 'WordSalad Summary Admin',
     'page callback' => 'wordsalad_page_info_last',
-    'access arguments' => array('administer write365'),
+    'access arguments' => array('administer wordsalad'),
     'type' => MENU_SUGGESTED_ITEM,
     'file' => 'wordsalad.pages.inc'
   );
@@ -153,7 +153,7 @@ function wordsalad_menu() {
     'title' => 'WordSalad Summary',
     'page callback' => 'wordsalad_page_info',
     'page arguments' => array(1),
-    'access callback' => 'writing365_page_user_access',
+    'access callback' => 'wordsalad_check_permission',
     'access arguments' => array(1),
     'file' => 'wordsalad.pages.inc'
   );
@@ -162,13 +162,13 @@ function wordsalad_menu() {
       'description' => 'Configure WordSalad settings.',
       'page callback' => 'drupal_get_form',
       'page arguments' => array('wordsalad_admin_form'),
-      'access arguments' => array('administer settings'),
+      'access arguments' => array('administer wordsalad'),
   );
   return $items;
 }
 
 /**
- * Implementnode_title_lists hook_block_info().
+ * Implements hook_block_info().
  */
 function wordsalad_block_info() {
   $block ['recent'] = array(
@@ -181,7 +181,24 @@ function wordsalad_block_info() {
 }
 
 /**
- * Implements hook_block_configure().
+ * Implements hood_Permission()
+ */
+function wordsalad_permission(){
+  return array(
+    'administer wordsalad' => array(
+        'title' => t('Administer WordSalad'),
+        'description' => t('Preforms administeration task for WordSalad')
+      ),
+    'view wordsalad information' => array(
+        'title' => t('View WordSalad Information'),
+        'description' => t('Can see users own wordsalad information')
+    )
+  );
+  
+}
+
+/**
+ * Implements hook_block_configure()
  */
 function wordsalad_block_configure($delta = '') {
   if ($delta == 'recent') {
@@ -217,6 +234,9 @@ function wordsalad_block_configure($delta = '') {
   return $form;
 }
 
+/**
+ * Implements hook_form()
+ */
 function wordsalad_admin_form(){
   $from = array();
 
@@ -226,9 +246,9 @@ function wordsalad_admin_form(){
       '#description' => 'Endpoint for WordSalad API URL',
       '#required' => TRUE,
   );
-  
+
   $form['modules'] = array();
-  
+
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array(
     '#type' => 'submit',
@@ -239,6 +259,10 @@ function wordsalad_admin_form(){
   return system_settings_form($form);
 }
 
+function wordsalad_check_permission($account){
+  
+  return $account->uid && user_access('view wordsalad information') && (user_access('view wordsalad information', $account));
+}
 
 
 ?>
