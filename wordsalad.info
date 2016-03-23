@@ -2,7 +2,7 @@ name = WordSalad
 description = Drupal module to detect word salad for Write 365 journal entries content
 package = Writing Center Tools
 core = 7.x
-version = 7.x-1.2
+version = 7.x-1.3
 
 
 
