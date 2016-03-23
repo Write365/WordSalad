@@ -15,7 +15,7 @@ function wordsalad_entity_postinsert($entity, $entity_type) {
        * Contact NathanHealea for Endpoint of connection
        * March 4th, 2016 a public url has not been created.
        */
-      $endpoint = $url + $entity->nid;
+      $endpoint = $url . $entity->nid;
 
       // Initializing Curl
       $curl = curl_init();
@@ -83,7 +83,7 @@ function wordsalad_entity_postupdate($entity, $entity_type) {
        * Contact NathanHealea for Endpoint of connection
        * March 4th, 2016 a public url has not been created.
        */
-      $endpoint = $url + $entity->nid;
+      $endpoint = $url . $entity->nid;
 
       // Initializing Curl
       $curl = curl_init();
