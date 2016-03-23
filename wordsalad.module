@@ -3,7 +3,8 @@
 /**
  *
  */
-function wordsalad_entity_postinsert($entity, $entity_type) {
+function wordsalad_entity_postinsert($entity, $entity_type)
+{
   if ($entity_type == 'node') {
     if ($entity->type == 'writing365') {
       // End point
@@ -49,8 +50,7 @@ function wordsalad_entity_postinsert($entity, $entity_type) {
         ),
           WATCHDOG_ERROR);
 
-      }
-      else { // if no error was received then store results.
+      } else { // if no error was received then store results.
 
         // checking to make sure actual data was return.
         if (isset($data->is_wordsalad)) {
@@ -72,7 +72,8 @@ function wordsalad_entity_postinsert($entity, $entity_type) {
 /**
  *
  */
-function wordsalad_entity_postupdate($entity, $entity_type) {
+function wordsalad_entity_postupdate($entity, $entity_type)
+{
   if ($entity_type == 'node') {
     if ($entity->type == 'writing365') {
 
@@ -117,8 +118,7 @@ function wordsalad_entity_postupdate($entity, $entity_type) {
         ),
           WATCHDOG_ERROR);
 
-      }
-      else { // if no error was received then store results.
+      } else { // if no error was received then store results.
 
         // checking to make sure actual data was return.
         if (isset($data->is_wordsalad)) {
@@ -141,11 +141,12 @@ function wordsalad_entity_postupdate($entity, $entity_type) {
  * Implements hook_menu().
  * Added 3-2-16
  */
-function wordsalad_menu() {
+function wordsalad_menu()
+{
   $items['wordsalad'] = array(
     'title' => 'WordSalad Summary Admin',
     'page callback' => 'wordsalad_page_info_last',
-    'access arguments' => array('administer write365'),
+    'access arguments' => array('administer wordsalad'),
     'type' => MENU_SUGGESTED_ITEM,
     'file' => 'wordsalad.pages.inc'
   );
@@ -153,24 +154,25 @@ function wordsalad_menu() {
     'title' => 'WordSalad Summary',
     'page callback' => 'wordsalad_page_info',
     'page arguments' => array(1),
-    'access callback' => 'writing365_page_user_access',
+    'access callback' => 'wordsalad_check_permission',
     'access arguments' => array(1),
     'file' => 'wordsalad.pages.inc'
   );
   $items['admin/config/services/wordsalad'] = array(
-      'title' => 'WordSalad API URL',
-      'description' => 'Configure WordSalad settings.',
-      'page callback' => 'drupal_get_form',
-      'page arguments' => array('wordsalad_admin_form'),
-      'access arguments' => array('administer settings'),
+    'title' => 'WordSalad API URL',
+    'description' => 'Configure WordSalad settings.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('wordsalad_admin_form'),
+    'access arguments' => array('administer wordsalad'),
   );
   return $items;
 }
 
 /**
- * Implementnode_title_lists hook_block_info().
+ * Implements hook_block_info().
  */
-function wordsalad_block_info() {
+function wordsalad_block_info()
+{
   $block ['recent'] = array(
     'info' => t('Recent journal entries (WS)'),
     'properties' => array(
@@ -181,9 +183,28 @@ function wordsalad_block_info() {
 }
 
 /**
- * Implements hook_block_configure().
+ * Implements hood_Permission()
  */
-function wordsalad_block_configure($delta = '') {
+function wordsalad_permission()
+{
+  return array(
+    'administer wordsalad' => array(
+      'title' => t('Administer WordSalad'),
+      'description' => t('Preforms administeration task for WordSalad')
+    ),
+    'view wordsalad information' => array(
+      'title' => t('View WordSalad Information'),
+      'description' => t('Can see users own wordsalad information')
+    )
+  );
+
+}
+
+/**
+ * Implements hook_block_configure()
+ */
+function wordsalad_block_configure($delta = '')
+{
   if ($delta == 'recent') {
     $form ['wordsalad_block_count'] = array(
       '#type' => 'select',
@@ -217,28 +238,55 @@ function wordsalad_block_configure($delta = '') {
   return $form;
 }
 
-function wordsalad_admin_form(){
-  $from = array();
+/**
+ * Implements hook_form()
+ */
+function wordsalad_admin_form()
+{
+  /*$form = array();*/
 
-  $form['wordsalad_api_url'] = array(
+  $current_url = variable_get('wordsalad_api_url');
+  if (!is_null($current_url)) {
+    $form['wordsalad_api_url'] = array(
       '#type' => 'textfield',
       '#title' => 'WordSalad API URL ',
-      '#description' => 'Endpoint for WordSalad API URL',
+      '#description' => 'Endpoint for WordSalad API URL. <br/> <strong>Current URL: </strong>' . $current_url,
       '#required' => TRUE,
-  );
-  
+    );
+  } else {
+    $form['wordsalad_api_url'] = array(
+      '#type' => 'textfield',
+      '#title' => 'WordSalad API URL ',
+      '#description' => 'Endpoint for WordSalad API URL. <br/> <strong>Current URL: </strong>' . $current_url,
+      '#required' => TRUE,
+    );
+  }
+
+
+  /*if(!is_null($current_url)){
+    $form['current'] = "Current Url: " . $current_url;
+  }
+  else{
+    $form['current'] = "Current Url: ";
+  }*/
+
+
   $form['modules'] = array();
-  
+
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array(
     '#type' => 'submit',
-      '#value' => t('Save configuration'),
+    '#value' => t('Save configuration'),
   );
 
 
   return system_settings_form($form);
 }
 
+function wordsalad_check_permission($account)
+{
+  return $account->uid && user_access('view wordsalad information') && (user_access('view wordsalad information', $account));
+}
 
 
 ?>

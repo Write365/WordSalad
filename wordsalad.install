@@ -64,8 +64,11 @@ function wordsalad_schema(){
     return $schema;
 }
 
-function wordsalad_update_0012(){
+
+
+function wordsalad_update_7102(){
     return t('WordSalad is now updated to version 1.2');
 
 }
+
 
