@@ -28,8 +28,8 @@ function wordsalad_page_info_last() {
     # configure the table header columns
     $header = array(
         //array('data' => 'Node ID', 'field' => 'nid'),
-        array('data' => 'Title', 'field' => 'title', 'sort' => 'ASC'),
-        array('data' => 'Created', 'field' => 'created',       'sort' => 'ASC'),
+        array('data' => 'Title', 'field' => 'title'),
+        array('data' => 'Created', 'field' => 'created','sort' => 'DESC'),
         array('data' => 'Status', 'field' => 'is_wordsalad'),
         array('data' => 'Wordcount', 'field' => 'wordcount'),
     );
@@ -72,8 +72,9 @@ function wordsalad_page_info_last() {
         );
     }
 
-    $build .= theme('table', array('header' => $header, 'rows' => $rows ));
+    /*$build .= theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('id' => 'sort-table', 'class' => array('write365-table'))));*/
 
+    $build .= theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('created' => 'sort-table','class' => array('write365-table'))));
     # add the pager
     $build .= theme('pager');
 
@@ -98,8 +99,8 @@ function wordsalad_page_info($account) {
     # configure the table header columns
     $header = array(
         //array('data' => 'Node ID', 'field' => 'nid'),
-        array('data' => 'Title', 'field' => 'title', 'sort' => 'ASC'),
-        array('data' => 'Created', 'field' => 'created',       'sort' => 'ASC'),
+        array('data' => 'Title', 'field' => 'title'),
+        array('data' => 'Created', 'field' => 'created', 'sort' => 'DESC'),
         array('data' => 'Status', 'field' => 'is_wordsalad'),
         array('data' => 'Wordcount', 'field' => 'wordcount'),
 
@@ -143,7 +144,7 @@ function wordsalad_page_info($account) {
         );
     }
 
-    $build .= theme('table', array('header' => $header, 'rows' => $rows ));
+    $build .= theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('created' => 'sort-table','class' => array('write365-table'))));
 
     # add the pager
     $build .= theme('pager');
